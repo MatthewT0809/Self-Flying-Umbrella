@@ -1,12 +1,12 @@
 import numpy as np
-import matplotlib
+import matplotlib.pyplot as plt
 import turtle
 import time
 
 # ------
 # Global Parameters
 TIMER = 0
-TIME_STEP = 0.001   # seconds
+TIME_STEP = 0.005   # seconds
 SETPOINT = 10
 SIM_TIME = 100
 INITIAL_X = 0
@@ -19,9 +19,9 @@ MAX_THRUST = 15  # newtons
 
 #----- 
 #PID GAINS
-KP = 1.0
-KI = 1.0
-KD = 1.0
+KP = 0.3
+KI = 0.1
+KD = 0
 
 #------
 
@@ -31,13 +31,15 @@ class Simulation(object):
         self.pid = PID(KP,KI,KD,SETPOINT)
         self.screen = turtle.Screen()
         self.screen.setup(800,600)
-        self.marker = turtle.Turtle()
-        self.marker.penup()
-        self.marker.left(180)
-        self.marker.goto(15,SETPOINT)
-        self.marker.color('red')
+        #self.marker = turtle.Turtle()
+        #self.marker.penup()
+        #self.marker.left(180)
+        #self.marker.goto(15,SETPOINT)
+        #self.marker.color('red')
         self.sim = True
         self.timer = 0
+        self.poses = np.array([])
+        self.times = np.array([])
     def cycle(self):
         while(self.sim):
             thrust = self.pid.compute(self.Insight.get_y()) 
@@ -57,7 +59,12 @@ class Simulation(object):
             elif self.Insight.get_y() < -800:
                 print("OUT OF BOUND")
                 self.sim = False 
-
+            self.poses = np.append(self.poses,self.Insight.get_y())
+            self.times = np.append(self.times,self.timer)
+        graph(self.times,self.poses)
+def graph(x,y):
+    plt.show(x,y)
+    plt.show() 
 class Rocket(object):
     def __init__(self):
         global Rocket
@@ -83,6 +90,7 @@ class Rocket(object):
         self.Rocket.sety(self.y + self.dy)
     def get_y(self):
         self.y = self.Rocket.ycor()
+        #print(f"y coordinate is {self.y}")
         return self.y
 class PID(object):
     def __init__(self,KP,KI,KD,target):
@@ -90,18 +98,24 @@ class PID(object):
         self.ki = KI
         self.kd = KD
         self.setpoint = target
+        #print(f"target = {target}")
         self.error = 0
         self.error_last = 0
         self.intergral_error = 0
         self.derivative_error = 0
         self.output = 0
     def compute(self,pos): 
-        self.eror = self.setpoint - pos
+        self.error = self.setpoint - pos
         self.intergral_error += self.error * TIME_STEP
         self.derivative_error = (self.error - self.error_last) / TIME_STEP
         self.error_last = self.error
         self.output = self.kp*self.error + self.ki*self.intergral_error + self.kd*self.derivative_error
+        if self.output >= MAX_THRUST:
+            self.output = MAX_THRUST
+        elif self.output <= 0:
+            self.output = 0
         return self.output
+
 
      
 def main():
