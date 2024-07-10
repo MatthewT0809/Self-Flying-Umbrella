@@ -6,9 +6,9 @@ import time
 # ------
 # Global Parameters
 TIMER = 0
-TIME_STEP = 0.005   # seconds
+TIME_STEP = 0.001   # seconds
 SETPOINT = 10
-SIM_TIME = 100
+SIM_TIME = 500
 INITIAL_X = 0
 INITIAL_Y = -100
 V_i = 0  # inital velocity
@@ -19,9 +19,14 @@ MAX_THRUST = 15  # newtons
 
 #----- 
 #PID GAINS
-KP = 0.3
-KI = 0.1
-KD = 0
+#ku = 0.6
+#Tu = 17 
+KP = 0.36 
+KI = 40
+KD =  0.0008099999999999997
+#KP = 0.6
+#KI = 0
+#KD = 0
 
 #------
 
@@ -63,7 +68,7 @@ class Simulation(object):
             self.times = np.append(self.times,self.timer)
         graph(self.times,self.poses)
 def graph(x,y):
-    plt.show(x,y)
+    plt.plot(x,y)
     plt.show() 
 class Rocket(object):
     def __init__(self):
