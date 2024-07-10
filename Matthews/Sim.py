@@ -6,7 +6,7 @@ import time
 # ------
 # Global Parameters
 TIMER = 0
-SETPOINT = 1000
+SETPOINT = 400
 #------
 
 class Simulation(object):
@@ -19,7 +19,7 @@ class Simulation(object):
         self.marker.goto(15,SETPOINT)
 
 def main(): 
-    while(TIMER < 5):
+    while(TIMER < 10):
         sim = Simulation()
         time.sleep(1)
         timer += 1
